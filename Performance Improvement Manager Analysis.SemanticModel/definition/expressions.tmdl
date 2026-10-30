@@ -1,0 +1,69 @@
+expression Stg_Crisis =
+		let
+		    Source = #"Crisis Dataset"
+		in
+		    Source
+	lineageTag: 8c295549-3371-429c-b493-02e8a2895006
+	queryGroup: Transform
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Entity_Crisis =
+		let
+		    Source = Stg_Crisis,
+		    #"Replaced Value" = Table.ReplaceValue(Source,"NULL",null,Replacer.ReplaceValue,{"CDPM11 Compliance Status", "CDPM12 Compliance Status", "Ethnicity", "Contact Date Time", "Contact Type", "Contact Medium", "Contact Outcome", "TeamTypeNationalCode", "TeamTypeNationalDesc"}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"Contact Date Time", type datetime}})
+		in
+		    #"Changed Type"
+	lineageTag: 56c464ae-8989-45b8-91a8-23e978ea6a22
+	queryGroup: Transform
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Crisis Dataset' =
+		let
+		  Source = Excel.Workbook(File.Contents("C:\Users\STAR\Downloads\Performance Improvement Manager Analysis test.xlsx"), null, true),
+		  #"Navigation 1" = Source{[Item = "Crisis Dataset", Kind = "Sheet"]}[Data],
+		  #"Promoted headers" = Table.PromoteHeaders(#"Navigation 1", [PromoteAllScalars = true]),
+		  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"Applicable Crisis KPI", type text}, {"CDPM11 Compliance Status", type text}, {"CDPM12 Compliance Status", type text}, {"PatientId", type text}, {"Age", Int64.Type}, {"Ethnicity", type text}, {"Gender", type text}, {"ReferralId", Int64.Type}, {"Team", type text}, {"Locality", type text}, {"Referral Date Time", type datetime}, {"Referral Source", type text}, {"Referral Urgency", type text}, {"Referral Urgency Clean", type text}, {"Contact Type", type text}, {"Contact Medium", type text}, {"Contact Medium Clean", type text}, {"Contact Outcome", type text}, {"TeamTypeNationalCode", type text}, {"TeamTypeNationalDesc", type text}, {"Number of Contacts", Int64.Type}, {"Other Active Referrals", Int64.Type}}, "en-US")
+		in
+		  #"Changed column type"
+	lineageTag: 011e7a58-ebed-43d3-9076-ffcdd6f2071b
+	queryGroup: 'RAW Data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Ref_FirstF2F =
+		let
+		    Source = Entity_Crisis,
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Contact Medium Clean] = "Face to face")),
+		    #"Grouped Rows" = Table.Group(#"Filtered Rows", {"ReferralId"}, {{"FirstF2FDateTime", each List.Min([Contact Date Time]), type nullable datetime}, {"F2FContactCount", each Table.RowCount(_), Int64.Type}})
+		in
+		    #"Grouped Rows"
+	lineageTag: 4decd010-617d-4e52-978a-16ca458f0b6e
+	queryGroup: Transform
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Ref_AllContacts =
+		let
+		    Source = Entity_Crisis,
+		    #"Filtered Rows" = Table.SelectRows(Source, each ([Contact Date Time] <> null)),
+		    #"Grouped Rows" = Table.Group(#"Filtered Rows", {"ReferralId"}, {{"ContactCount", each Table.RowCount(_), Int64.Type}, {"FirstContactDateTime", each List.Min([Contact Date Time]), type nullable datetime}, {"LastContactDateTime", each List.Max([Contact Date Time]), type nullable datetime}})
+		in
+		    #"Grouped Rows"
+	lineageTag: 5f246338-b78a-4c90-9bab-5ad0b39709e4
+	queryGroup: Transform
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

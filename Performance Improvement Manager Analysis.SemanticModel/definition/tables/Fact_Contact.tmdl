@@ -1,0 +1,207 @@
+table Fact_Contact
+	lineageTag: 67c0fcc0-dd67-4ec0-b1c2-4ac763c10bca
+
+	measure 'Total Contacts' = COUNTROWS ( Fact_Contact )
+		formatString: #,0
+		displayFolder: 05 Operational
+		lineageTag: b443cc42-5a67-487f-8efc-8634284ef406
+
+	measure 'F2F Contacts' = CALCULATE ( COUNTROWS ( Fact_Contact ), Fact_Contact[Contact Medium Clean] = "Face to face" )
+		formatString: #,0
+		displayFolder: 05 Operational
+		lineageTag: 1dfcb0d9-7f24-4eb4-a58c-000f74910733
+
+	measure 'F2F Contact %' = DIVIDE ( [F2F Contacts], [Total Contacts] )
+		formatString: 0.0%
+		displayFolder: 05 Operational
+		lineageTag: 9f06e1af-41e1-4ffe-8023-4d204564c4e9
+
+	measure 'Avg Contacts per Referral' = DIVIDE ( [Total Contacts],[Total Referrals] )
+		displayFolder: 05 Operational
+		lineageTag: b80144af-ff1e-4a88-933e-b9a289308cc0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Contact Outcome Recorded %' = DIVIDE ( CALCULATE ( COUNTROWS ( Fact_Contact ), NOT Fact_Contact[Contact Outcome] IN { "Not recorded", "Not Known" } ), [Total Contacts] )
+		formatString: 0.0%
+		displayFolder: 07 Data Quality
+		lineageTag: a771213a-a9dc-4762-9f6e-73215d98e46a
+
+	column ReferralId
+		dataType: int64
+		formatString: 0
+		lineageTag: efa3f2e3-9a0b-4517-9c9f-97b1c4c83e89
+		summarizeBy: count
+		sourceColumn: ReferralId
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Referral Date Time'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 76a7b733-eb8d-42ee-a280-fa00b3a7e6b3
+		summarizeBy: none
+		sourceColumn: Referral Date Time
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Contact Date Time'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: ff692698-ab39-49a9-9caf-910507cedbd0
+		summarizeBy: none
+		sourceColumn: Contact Date Time
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Contact Type'
+		dataType: string
+		lineageTag: 6f19ead6-d6eb-424e-96c0-1aa91341d57e
+		summarizeBy: none
+		sourceColumn: Contact Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Contact Medium'
+		dataType: string
+		lineageTag: f2388fea-1520-4d42-9700-4e95a8369877
+		summarizeBy: none
+		sourceColumn: Contact Medium
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Contact Medium Clean'
+		dataType: string
+		lineageTag: 34f9f016-504d-4c54-a47f-8fcbd3d4dedd
+		summarizeBy: none
+		sourceColumn: Contact Medium Clean
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Contact Outcome'
+		dataType: string
+		lineageTag: f9ffa87d-0afb-4380-9cac-ac8fb3d18b16
+		summarizeBy: none
+		sourceColumn: Contact Outcome
+
+		annotation SummarizationSetBy = Automatic
+
+	column TeamTypeNationalCode
+		dataType: string
+		lineageTag: e1f1879d-f34a-40ac-ab2b-f21330800c7c
+		summarizeBy: none
+		sourceColumn: TeamTypeNationalCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column TeamTypeNationalDesc
+		dataType: string
+		lineageTag: 626408ef-69c7-4780-ad75-4f099d595333
+		summarizeBy: none
+		sourceColumn: TeamTypeNationalDesc
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Number of Contacts'
+		dataType: int64
+		formatString: 0
+		lineageTag: fcecce86-1f4f-4ceb-b06b-5f475bb11434
+		summarizeBy: sum
+		sourceColumn: Number of Contacts
+
+		annotation SummarizationSetBy = Automatic
+
+	column HoursFromReferral
+		dataType: double
+		lineageTag: 75985e61-ed40-48a2-b66e-800f36dce707
+		summarizeBy: sum
+		sourceColumn: HoursFromReferral
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Contact Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a7f6c45c-0ebf-4892-a20d-26aa0f9bb359
+		summarizeBy: none
+		sourceColumn: Contact Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ContactKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 3bcdc05c-7c50-4be3-8541-7e9e7c5b4178
+		summarizeBy: count
+		sourceColumn: ContactKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Team
+		dataType: string
+		lineageTag: f2382c44-493a-43d6-b839-355434cc7946
+		summarizeBy: none
+		sourceColumn: Team
+
+		annotation SummarizationSetBy = Automatic
+
+	column Locality
+		dataType: string
+		lineageTag: b8c488c0-7acc-4d80-8623-8c0dae93201f
+		summarizeBy: none
+		sourceColumn: Locality
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Referral Urgency'
+		dataType: string
+		lineageTag: f3f69571-f331-4e85-a026-316dc1012867
+		summarizeBy: none
+		sourceColumn: Referral Urgency
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Referral Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 960b71f5-dbcc-41c0-a99a-9db13054c0d4
+		summarizeBy: none
+		sourceColumn: Referral Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Fact_Contact = m
+		mode: import
+		queryGroup: Load
+		source =
+				let
+				    Source = Entity_Crisis,
+				    #"Filtered Rows" = Table.SelectRows(Source, each ([Contact Date Time] <> null)),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Filtered Rows",{"ReferralId", "Team", "Locality", "Referral Date Time", "Referral Urgency", "Contact Date Time", "Contact Type", "Contact Medium", "Contact Medium Clean", "Contact Outcome", "TeamTypeNationalCode", "TeamTypeNationalDesc", "Number of Contacts"}),
+				    #"Duplicated Column1" = Table.DuplicateColumn(#"Removed Other Columns", "Referral Date Time", "Referral Date Time - Copy"),
+				    #"Added Custom" = Table.AddColumn(#"Duplicated Column1", "HoursFromReferral", each Duration.TotalHours([Contact Date Time] - [Referral Date Time])),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom",{{"HoursFromReferral", type number}}),
+				    #"Duplicated Column" = Table.DuplicateColumn(#"Changed Type", "Contact Date Time", "Contact Date Time - Copy"),
+				    #"Renamed Columns" = Table.RenameColumns(#"Duplicated Column",{{"Contact Date Time - Copy", "Contact Date"}}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"Contact Date", type date}}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Changed Type1",null,"Not recorded",Replacer.ReplaceValue,{"Contact Type", "Contact Medium", "Contact Medium Clean", "Contact Outcome", "TeamTypeNationalCode", "TeamTypeNationalDesc"}),
+				    #"Added Index" = Table.AddIndexColumn(#"Replaced Value", "Index", 0, 1, Int64.Type),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Added Index",{{"Index", "ContactKey"}}),
+				    #"Added Index1" = Table.AddIndexColumn(#"Renamed Columns1", "Index", 1, 1, Int64.Type),
+				    #"Removed Columns" = Table.RemoveColumns(#"Added Index1",{"ContactKey"}),
+				    #"Renamed Columns2" = Table.RenameColumns(#"Removed Columns",{{"Index", "ContactKey"}}),
+				    #"Changed Type2" = Table.TransformColumnTypes(#"Renamed Columns2",{{"Referral Date Time - Copy", type date}}),
+				    #"Renamed Columns3" = Table.RenameColumns(#"Changed Type2",{{"Referral Date Time - Copy", "Referral Date"}})
+				in
+				    #"Renamed Columns3"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

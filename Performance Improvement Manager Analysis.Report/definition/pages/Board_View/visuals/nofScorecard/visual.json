@@ -1,0 +1,465 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "nofScorecard",
+  "position": {
+    "x": 24,
+    "y": 246,
+    "width": 1000,
+    "height": 340,
+    "z": 9000,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Locality"
+                    }
+                  },
+                  "Property": "Locality"
+                }
+              },
+              "queryRef": "Dim_Locality.Locality",
+              "nativeQueryRef": "Locality",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "CDP_M12 Passed"
+                }
+              },
+              "queryRef": "Fact_Referral.CDP_M12 Passed",
+              "nativeQueryRef": "CDP_M12 Passed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "CDP_M12 In Scope"
+                }
+              },
+              "queryRef": "Fact_Referral.CDP_M12 In Scope",
+              "nativeQueryRef": "CDP_M12 In Scope"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "CDP_M12 Compliance %"
+                }
+              },
+              "queryRef": "Fact_Referral.CDP_M12 Compliance %",
+              "nativeQueryRef": "CDP_M12 Compliance %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "NOF Band (M12)"
+                }
+              },
+              "queryRef": "Fact_Referral.NOF Band (M12)",
+              "nativeQueryRef": "NOF Band (M12)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "M12 Trajectory Target (Next)"
+                }
+              },
+              "queryRef": "Fact_Referral.M12 Trajectory Target (Next)",
+              "nativeQueryRef": "M12 Trajectory Target (Next)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "M12 Gap to Target"
+                }
+              },
+              "queryRef": "Fact_Referral.M12 Gap to Target",
+              "nativeQueryRef": "M12 Gap to Target"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "M12 Lower Quartile"
+                }
+              },
+              "queryRef": "Fact_Referral.M12 Lower Quartile",
+              "nativeQueryRef": "Trust LQ (Teams)",
+              "displayName": "Trust LQ (Teams)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "M12 Upper Quartile"
+                }
+              },
+              "queryRef": "Fact_Referral.M12 Upper Quartile",
+              "nativeQueryRef": "Trust UQ (Teams)",
+              "displayName": "Trust UQ (Teams)"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact_Referral"
+                  }
+                },
+                "Property": "CDP_M12 Compliance %"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {}
+        },
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Fact_Referral"
+                        }
+                      },
+                      "Property": "M12 vs Benchmark Colour"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "Fact_Referral.CDP_M12 Compliance %"
+          }
+        },
+        {
+          "properties": {
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Fact_Referral"
+                        }
+                      },
+                      "Property": "M12 Gap Colour"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "Fact_Referral.M12 Gap to Target"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ],
+      "rowHeaders": [
+        {
+          "properties": {}
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "126.00733689129237D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_Referral.CDP_M12 Compliance %"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "105.55882136663074D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_Referral.NOF Band (M12)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "133.7316173243671D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_Referral.M12 Trajectory Target (Next)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "117.50367015891348D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_Referral.M12 Gap to Target"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "105.22792607802874D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_Referral.M12 Lower Quartile"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "95.62021485384189D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim_Locality.Locality"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "89.86011448791905D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_Referral.CDP_M12 Passed"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "98.37169884173511D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_Referral.CDP_M12 In Scope"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "97.13907262311507D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_Referral.M12 Upper Quartile"
+          }
+        }
+      ],
+      "subTotals": [
+        {
+          "properties": {
+            "columnSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "perRowLevel": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "levelSubtotalEnabled": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim_Locality.Locality"
+          }
+        }
+      ],
+      "columnFormatting": [
+        {
+          "properties": {
+            "styleSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "styleValues": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Fact_Referral.M12 Trajectory Target (Next)"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'NOF Scorecard : CDP_M12 by Locality (Actual / Target / Benchmark)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

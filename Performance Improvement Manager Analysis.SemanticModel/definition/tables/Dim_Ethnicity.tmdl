@@ -1,0 +1,51 @@
+table Dim_Ethnicity
+	lineageTag: 7efa3ca9-fdd7-450c-be21-16a9b6efc49b
+
+	column Ethnicity
+		dataType: string
+		lineageTag: fae589e3-1eae-429b-a299-9c01fc8adc52
+		summarizeBy: none
+		sourceColumn: Ethnicity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ethnicity Recorded'
+		dataType: string
+		lineageTag: 7e82469b-2d35-4849-912a-a37027c04c1a
+		summarizeBy: none
+		sourceColumn: Ethnicity Recorded
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ethnicity Group'
+		dataType: string
+		lineageTag: f064433d-7a77-41e6-a0b5-659743e1bfc6
+		summarizeBy: none
+		sourceColumn: Ethnicity Group
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Ethnicity = m
+		mode: import
+		queryGroup: Load
+		source =
+				let
+				    Source = Entity_Crisis,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Ethnicity"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Replaced Value" = Table.ReplaceValue(#"Removed Duplicates",null,"Not recorded",Replacer.ReplaceValue,{"Ethnicity"}),
+				    #"Added Conditional Column" = Table.AddColumn(#"Replaced Value", "EthnicityRecorded", each if [Ethnicity] = "Not recorded" then "No" else if [Ethnicity] = "Not Stated" then "No" else if [Ethnicity] = "Not Known" then "No" else "Yes"),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Conditional Column",{{"EthnicityRecorded", "Ethnicity Recorded"}}),
+				    #"Duplicated Column" = Table.DuplicateColumn(#"Renamed Columns", "Ethnicity", "Ethnicity - Copy"),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Duplicated Column",{{"Ethnicity - Copy", "Ethnicity Group"}}),
+				    #"Split Column by Delimiter" = Table.SplitColumn(#"Renamed Columns1", "Ethnicity Group", Splitter.SplitTextByDelimiter("-", QuoteStyle.Csv), {"Ethnicity Group.1", "Ethnicity Group.2"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Split Column by Delimiter",{{"Ethnicity Group.1", type text}, {"Ethnicity Group.2", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Ethnicity Group.2"}),
+				    #"Renamed Columns2" = Table.RenameColumns(#"Removed Columns",{{"Ethnicity Group.1", "Ethnicity Group"}})
+				in
+				    #"Renamed Columns2"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

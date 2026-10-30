@@ -1,0 +1,234 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "rdTable",
+  "position": {
+    "x": 24,
+    "y": 246,
+    "width": 1872,
+    "height": 810,
+    "z": 4000,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "ReferralId"
+                }
+              },
+              "queryRef": "Fact_Referral.ReferralId",
+              "nativeQueryRef": "ReferralId"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "Locality"
+                }
+              },
+              "queryRef": "Fact_Referral.Locality",
+              "nativeQueryRef": "Locality"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "Team"
+                }
+              },
+              "queryRef": "Fact_Referral.Team",
+              "nativeQueryRef": "Team"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "Referral Urgency"
+                }
+              },
+              "queryRef": "Fact_Referral.Referral Urgency",
+              "nativeQueryRef": "Referral Urgency"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "ReferralDate"
+                }
+              },
+              "queryRef": "Fact_Referral.ReferralDate",
+              "nativeQueryRef": "ReferralDate"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "AgeBand"
+                }
+              },
+              "queryRef": "Fact_Referral.AgeBand",
+              "nativeQueryRef": "AgeBand"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "Gender"
+                }
+              },
+              "queryRef": "Fact_Referral.Gender",
+              "nativeQueryRef": "Gender"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "Ethnicity"
+                }
+              },
+              "queryRef": "Fact_Referral.Ethnicity",
+              "nativeQueryRef": "Ethnicity"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "CDPM11 Compliance Status"
+                }
+              },
+              "queryRef": "Fact_Referral.CDPM11 Compliance Status",
+              "nativeQueryRef": "CDPM11 Compliance Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "CDPM12 Compliance Status"
+                }
+              },
+              "queryRef": "Fact_Referral.CDPM12 Compliance Status",
+              "nativeQueryRef": "CDPM12 Compliance Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "HoursToFirstF2F"
+                }
+              },
+              "queryRef": "Fact_Referral.HoursToFirstF2F",
+              "nativeQueryRef": "HoursToFirstF2F"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Referral"
+                    }
+                  },
+                  "Property": "HoursToFirstContact"
+                }
+              },
+              "queryRef": "Fact_Referral.HoursToFirstContact",
+              "nativeQueryRef": "HoursToFirstContact"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Referral-level detail'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

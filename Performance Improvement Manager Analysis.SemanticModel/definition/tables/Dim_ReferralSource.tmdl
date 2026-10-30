@@ -1,0 +1,35 @@
+table Dim_ReferralSource
+	lineageTag: ca76ea2f-fa6e-442a-a1a3-105d0028e83a
+
+	column 'Referral Source'
+		dataType: string
+		lineageTag: b53f0a7a-36b8-4cc9-a878-3b06a4f83f86
+		summarizeBy: none
+		sourceColumn: Referral Source
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Source Group'
+		dataType: string
+		lineageTag: cce6cadf-045e-4a2f-858b-0cf34dabb554
+		summarizeBy: none
+		sourceColumn: Source Group
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_ReferralSource = m
+		mode: import
+		queryGroup: Load
+		source =
+				let
+				    Source = Entity_Crisis,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Referral Source"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Added Conditional Column" = Table.AddColumn(#"Removed Duplicates", "Source Group", each if [Referral Source] = "General Medical Practitioner Practice" then "Primary care" else if [Referral Source] = "Other Primary Health Care" then "Primary care" else if [Referral Source] = "Self-referral" then "Self or carer" else if [Referral Source] = "Carer/Relative" then "Self or carer" else if [Referral Source] = "A&E Department" then "Emergency services" else if [Referral Source] = "" then "Emergency services" else if [Referral Source] = "" then "Emergency services" else if [Referral Source] = "" then "Emergency services" else if [Referral Source] = "Internal Referral" then "Internal" else if [Referral Source] = "Social Services" then "Social Care" else "Other")
+				in
+				    #"Added Conditional Column"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

@@ -1,0 +1,40 @@
+relationship 308786a9-5d78-ad8f-e9bb-5bed516fc138
+	fromColumn: Fact_Referral.Ethnicity
+	toColumn: Dim_Ethnicity.Ethnicity
+
+relationship 33559dfb-5b0e-a142-e938-5b5ee053b557
+	fromColumn: Fact_Referral.'Referral Source'
+	toColumn: Dim_ReferralSource.'Referral Source'
+
+relationship d664ce8b-fd9b-298f-4044-4de19837375f
+	fromColumn: Fact_Referral.Locality
+	toColumn: Dim_Locality.Locality
+
+relationship AutoDetected_206c4064-a4ef-4aa9-bd2c-56f5a9b2a502
+	fromColumn: Fact_Trajectory.Locality
+	toColumn: Dim_Locality.Locality
+
+relationship c2ed663d-2196-4992-e25d-c2ea864574b7
+	fromColumn: Fact_Referral.Team
+	toColumn: Dim_Team.Team
+
+relationship b3317c5b-a74e-5422-82d9-2c14dbe5e2a0
+	fromColumn: Fact_Contact.'Contact Date'
+	toColumn: Dim_Date.Date
+
+relationship eceb6334-c269-ac7b-f59f-deaf542cc7e5
+	fromColumn: Fact_Referral.ReferralDate
+	toColumn: Dim_Date.Date
+
+relationship AutoDetected_ff3a07e5-bbe1-4ddc-9273-b8ad1dbd04ff
+	fromColumn: Fact_Contact.Team
+	toColumn: Dim_Team.Team
+
+relationship AutoDetected_953a0f92-1be2-43b0-8b0b-5af86e5dc594
+	fromColumn: Fact_Contact.Locality
+	toColumn: Dim_Locality.Locality
+
+relationship Rel_Trajectory_Date
+	fromColumn: Fact_Trajectory.Month
+	toColumn: Dim_Date.Date
+

@@ -1,0 +1,26 @@
+table Dim_Locality
+	lineageTag: ee125c8b-4978-47ed-877e-61f8177feaeb
+
+	column Locality
+		dataType: string
+		lineageTag: 20edee4a-383f-4bd3-a0a0-60068e41a289
+		summarizeBy: none
+		sourceColumn: Locality
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Locality = m
+		mode: import
+		queryGroup: Load
+		source =
+				let
+				    Source = Entity_Crisis,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Locality"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns")
+				in
+				    #"Removed Duplicates"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

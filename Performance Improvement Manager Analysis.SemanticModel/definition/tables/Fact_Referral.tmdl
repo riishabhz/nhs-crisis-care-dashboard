@@ -1,0 +1,675 @@
+table Fact_Referral
+	lineageTag: 1891f6e5-3d1e-4880-8e8c-cf9a2c357d79
+
+	measure 'Total Referrals' = DISTINCTCOUNT ( Fact_Referral[ReferralId] )
+		formatString: #,0
+		displayFolder: 01 KPIs
+		lineageTag: 932eea28-c02e-4adf-9e7a-30056ccf87a4
+
+	measure 'CDP_M11 In Scope' = CALCULATE ( DISTINCTCOUNT ( Fact_Referral[ReferralId] ), Fact_Referral[CDPM11 Compliance Status] IN { "Pass", "Breach" } )
+		formatString: #,0
+		displayFolder: 02 CDP_M11
+		lineageTag: adf9718a-c361-442f-bfdb-63ebe3ed5218
+
+	measure 'CDP_M11 Passed' = CALCULATE ( DISTINCTCOUNT ( Fact_Referral[ReferralId] ), Fact_Referral[CDPM11 Compliance Status] = "Pass" )
+		formatString: #,0
+		displayFolder: 02 CDP_M11
+		lineageTag: efb49ec6-4648-42ce-80ba-7cbbc73f308c
+
+	measure 'CDP_M11 Breached' = [CDP_M11 In Scope] - [CDP_M11 Passed]
+		formatString: #,0
+		displayFolder: 02 CDP_M11
+		lineageTag: 4d9e3325-e4cd-4997-afa1-3269da117017
+
+	measure 'CDP_M11 Compliance %' = DIVIDE ( [CDP_M11 Passed], [CDP_M11 In Scope] )
+		formatString: 0.0%
+		displayFolder: 02 CDP_M11
+		lineageTag: 3dba4bea-0028-4919-82b3-16e56395a20e
+
+	measure 'CDP_M12 In Scope' = CALCULATE ( DISTINCTCOUNT ( Fact_Referral[ReferralId] ), Fact_Referral[CDPM12 Compliance Status] IN { "Pass", "Breach" } )
+		formatString: #,0
+		displayFolder: 03 CDP_M12
+		lineageTag: 370f0a2a-cd05-464d-9aef-7810989adc86
+
+	measure 'CDP_M12 Passed' = CALCULATE ( DISTINCTCOUNT ( Fact_Referral[ReferralId] ), Fact_Referral[CDPM12 Compliance Status] = "Pass" )
+		formatString: #,0
+		displayFolder: 03 CDP_M12
+		lineageTag: d325f6e3-c603-4ae9-9f96-e759b463f6f1
+
+	measure 'CDP_M12 Breached' = [CDP_M12 In Scope] - [CDP_M12 Passed]
+		formatString: #,0
+		displayFolder: 03 CDP_M12
+		lineageTag: 85a1b16e-ba21-43a2-b7eb-965c80db006f
+
+	measure 'CDP_M12 Compliance %' = DIVIDE ( [CDP_M12 Passed], [CDP_M12 In Scope] )
+		formatString: 0.0%
+		displayFolder: 03 CDP_M12
+		lineageTag: 4f4dcde0-f5c8-463c-9b7b-c810ebac833a
+
+	measure 'NOF Band (M12)' = SWITCH ( TRUE (), ISBLANK ( [CDP_M12 Compliance %] ), BLANK (), [CDP_M12 Compliance %] >= 0.8, "NOF 1", [CDP_M12 Compliance %] >= 0.71, "NOF 2", [CDP_M12 Compliance %] >= 0.63, "NOF 3", "NOF 4" )
+		displayFolder: 03 CDP_M12
+		lineageTag: 8a119a07-e883-4c88-b1eb-2c806fb602aa
+
+	measure 'Crisis Standard Compliance %' = DIVIDE ( [CDP_M11 Passed] + [CDP_M12 Passed], [CDP_M11 In Scope] + [CDP_M12 In Scope] )
+		formatString: 0.0%
+		displayFolder: 01 KPIs
+		lineageTag: 1bdc648b-dbf5-4645-b05c-45c2d575dc75
+
+	measure 'Localities Below 80% (M12)' = COUNTROWS ( FILTER ( VALUES ( Dim_Locality[Locality] ), [CDP_M12 Compliance %] < 0.8 ) )
+		formatString: 0
+		displayFolder: 01 KPIs
+		lineageTag: 6088c9f2-07c1-4b34-b380-bac41caaa0b8
+
+	measure 'M12 RAG Colour' = SWITCH ( TRUE (), ISBLANK ( [CDP_M12 Compliance %] ), "#FFFFFF", [CDP_M12 Compliance %] >= 0.8, "#8FC7B5", [CDP_M12 Compliance %] >= 0.71, "#F0D08A", [CDP_M12 Compliance %] >= 0.63, "#EDB183", "#E39B92" )
+		displayFolder: 03 CDP_M12
+		lineageTag: e1bf3712-ddc3-4dc5-9866-0e5ac800e8f6
+
+		annotation SummarizationSetBy = Automatic
+
+	measure 'Ethnicity Recorded %' = DIVIDE ( CALCULATE ( DISTINCTCOUNT ( Fact_Referral[ReferralId] ), Dim_Ethnicity[Ethnicity Recorded] = "Yes" ), [Total Referrals] )
+		formatString: 0.0%
+		displayFolder: 04 Equality
+		lineageTag: 587a7043-6c7f-4d24-8be5-e912378fb8ca
+
+	measure 'Average Age' = AVERAGE ( Fact_Referral[Age] )
+		formatString: 0.0
+		displayFolder: 04 Equality
+		lineageTag: 6438bfb0-420d-4f26-b261-4cbb9d33a982
+
+	measure '% Referrals with F2F Contact' = DIVIDE ( CALCULATE ( DISTINCTCOUNT ( Fact_Referral[ReferralId] ), Fact_Referral[HasFaceToFaceContact] = "Yes" ), [Total Referrals] )
+		formatString: 0.0%
+		displayFolder: 05 Operational
+		lineageTag: db2d16e7-c871-4941-85ec-9a80273e2b21
+
+	measure 'Avg Hours to First F2F' = AVERAGE ( Fact_Referral[HoursToFirstF2F] )
+		formatString: 0.0
+		displayFolder: 05 Operational
+		lineageTag: b1e8f28a-4f5d-4285-9bc9-66fe6cb07de2
+
+	measure 'Avg Hours to First Contact' = AVERAGE ( Fact_Referral[HoursToFirstContact] )
+		formatString: 0.0
+		displayFolder: 05 Operational
+		lineageTag: 91af325b-fb18-484a-97ba-22267dc013cb
+
+	measure 'CDP_M11 Breach %' = DIVIDE ( [CDP_M11 Breached], [CDP_M11 In Scope] )
+		formatString: 0.0%
+		displayFolder: 02 CDP_M11
+		lineageTag: a5ad3627-f641-4468-b28b-fa8ea5ca12d3
+
+	measure 'CDP_M12 Breach %' = DIVIDE ( [CDP_M12 Breached], [CDP_M12 In Scope] )
+		formatString: 0.0%
+		displayFolder: 03 CDP_M12
+		lineageTag: c258b017-3162-4316-9cba-a8f0efd8180a
+
+	measure 'Median Hours to First F2F' = MEDIAN ( Fact_Referral[HoursToFirstF2F] )
+		formatString: 0.0
+		displayFolder: 05 Operational
+		lineageTag: b7056e98-9b33-49b0-a24a-c0a649e65d05
+
+	measure 'Median Hours to First Contact' = MEDIAN ( Fact_Referral[HoursToFirstContact] )
+		formatString: 0.0
+		displayFolder: 05 Operational
+		lineageTag: 6e2f4dbe-386c-48ef-bc9c-fb062ac4b06e
+
+	measure 'Gender Recorded %' =
+			DIVIDE (
+			    CALCULATE (
+			        COUNTROWS ( Fact_Referral ),
+			        KEEPFILTERS ( NOT Fact_Referral[Gender] IN { "INVALID", "NOT KNOWN" } )
+			    ),
+			    [Total Referrals]
+			)
+		formatString: 0.0%
+		displayFolder: 07 Data Quality
+		lineageTag: 2aecc6ef-201f-4c5f-be15-3fe01409c3d3
+
+	measure 'Referrals Missing Ethnicity' = CALCULATE ( DISTINCTCOUNT ( Fact_Referral[ReferralId] ), Dim_Ethnicity[Ethnicity Recorded] = "No" )
+		formatString: #,0
+		displayFolder: 07 Data Quality
+		lineageTag: c3eac094-298a-4b7b-954d-b6f6cf571904
+
+	measure 'M12 Provider Average' = CALCULATE ( [CDP_M12 Compliance %], ALL ( Dim_Locality ), ALL ( Dim_Team ) )
+		formatString: 0.0%
+		displayFolder: 08 NOF Benchmark
+		lineageTag: 8eadf07b-8b19-4724-b930-55d52ba2f4b3
+
+	measure 'M12 Upper Quartile' = CALCULATE ( PERCENTILEX.INC ( FILTER ( ALL ( Dim_Team[Team] ), NOT ISBLANK ( [CDP_M12 Compliance %] ) ), [CDP_M12 Compliance %], 0.75 ), ALL ( Dim_Locality ) )
+		formatString: 0.0%
+		displayFolder: 08 NOF Benchmark
+		lineageTag: 848f6801-fb64-4a19-a874-5d01af296a42
+
+	measure 'M12 Lower Quartile' = CALCULATE ( PERCENTILEX.INC ( FILTER ( ALL ( Dim_Team[Team] ), NOT ISBLANK ( [CDP_M12 Compliance %] ) ), [CDP_M12 Compliance %], 0.25 ), ALL ( Dim_Locality ) )
+		formatString: 0.0%
+		displayFolder: 08 NOF Benchmark
+		lineageTag: 09937dd7-ae6f-42d3-8552-ccdcbf366572
+
+	measure 'M12 Trajectory Target (Next)' =
+			
+			VAR DataEnd =
+			    MAXX ( ALL ( Fact_Referral ), Fact_Referral[ReferralDate] )
+			VAR NextMonthh =
+			    MINX (
+			        FILTER ( ALL ( Fact_Trajectory[Month] ), Fact_Trajectory[Month] > DataEnd ),
+			        Fact_Trajectory[Month]
+			    )
+			RETURN
+			    IF (
+			        ISFILTERED ( Fact_Trajectory[Month] ),
+			        AVERAGE ( Fact_Trajectory[Target Rate] ),
+			        CALCULATE (
+			            AVERAGE ( Fact_Trajectory[Target Rate] ),
+			            ALL ( Dim_Date ),
+			            Fact_Trajectory[Month] = NextMonthh
+			        )
+			    )
+		formatString: 0.0%
+		displayFolder: 08 NOF Benchmark
+		lineageTag: 08303f07-d7aa-457a-b9c0-bd46f6bf2664
+
+	measure 'M12 Gap to Target' = [CDP_M12 Compliance %] - [M12 Trajectory Target (Next)]
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 08 NOF Benchmark
+		lineageTag: f8841bb6-e6b1-4c3e-9193-6950b6334a9e
+
+	measure 'M12 Gap Colour' = IF ( ISBLANK ( [CDP_M12 Compliance %] ), "#FFFFFF", IF ( [M12 Gap to Target] >= 0, "#8FC7B5", "#E39B92" ) )
+		displayFolder: 08 NOF Benchmark
+		lineageTag: b9e9ddba-9719-4274-b95a-3ecd39e40c7b
+
+	measure 'M12 vs Benchmark Colour' = SWITCH ( TRUE (), ISBLANK ( [CDP_M12 Compliance %] ), "#FFFFFF", [CDP_M12 Compliance %] >= [M12 Upper Quartile], "#8FC7B5", [CDP_M12 Compliance %] >= [M12 Lower Quartile], "#F0D08A", "#E39B92" )
+		displayFolder: 08 NOF Benchmark
+		lineageTag: 6679cdb3-bdff-44b2-8892-6f790ba3ce96
+
+	measure 'Commentary — Board' = IF ( ISBLANK ( [CDP_M12 Compliance %] ), "No CDP_M12 in-scope referrals for the current selection.", "CDP_M12 compliance is " & FORMAT ( [CDP_M12 Compliance %], "0.0%" ) & " against the 80% NOF 1 target (" & FORMAT ( ABS ( 0.80 - [CDP_M12 Compliance %] ), "0.0%" ) & IF ( [CDP_M12 Compliance %] >= 0.80, " above", " below" ) & " target). " & [Localities Below 80% (M12)] & " of " & COUNTROWS ( VALUES ( Dim_Locality[Locality] ) ) & " localities are below 80%; weakest is " & MAXX ( FILTER ( VALUES ( Dim_Locality[Locality] ), [CDP_M12 Compliance %] = MINX ( VALUES ( Dim_Locality[Locality] ), [CDP_M12 Compliance %] ) ), Dim_Locality[Locality] ) & " at " & FORMAT ( MINX ( VALUES ( Dim_Locality[Locality] ), [CDP_M12 Compliance %] ), "0.0%" ) & ". CDP_M11 (4-hour) stands at " & FORMAT ( [CDP_M11 Compliance %], "0.0%" ) & "." )
+		displayFolder: 09 Commentary
+		lineageTag: 977e4ec9-3db6-4988-831e-901abe34e2f1
+
+	measure 'Commentary — Operational' =
+			
+			VAR MinDenom = 30
+			VAR RankedTeams =
+			    FILTER (
+			        VALUES ( Dim_Team[Team] ),
+			        NOT ISBLANK ( [CDP_M12 Compliance %] ) && [CDP_M12 In Scope] >= MinDenom
+			    )
+			VAR TrustRate = [CDP_M12 Compliance %]
+			VAR TeamCount = COUNTROWS ( RankedTeams )
+			VAR BelowCount =
+			    COUNTROWS ( FILTER ( RankedTeams, [CDP_M12 Compliance %] < TrustRate ) )
+			VAR WorstRate = MINX ( RankedTeams, [CDP_M12 Compliance %] )
+			VAR BestRate = MAXX ( RankedTeams, [CDP_M12 Compliance %] )
+			VAR WorstTeam =
+			    MAXX ( FILTER ( RankedTeams, [CDP_M12 Compliance %] = WorstRate ), Dim_Team[Team] )
+			VAR BestTeam =
+			    MAXX ( FILTER ( RankedTeams, [CDP_M12 Compliance %] = BestRate ), Dim_Team[Team] )
+			RETURN
+			    IF (
+			        ISBLANK ( TrustRate ) || TeamCount = 0,
+			        "No CDP_M12 in-scope referrals for the current selection.",
+			        "M12 compliance is " & FORMAT ( TrustRate, "0.0%" ) & " overall. "
+			            & BelowCount & " of " & TeamCount
+			            & " teams with 30 or more in-scope referrals are below the Trust average. Weakest: "
+			            & WorstTeam & " (" & FORMAT ( WorstRate, "0.0%" ) & "); strongest: "
+			            & BestTeam & " (" & FORMAT ( BestRate, "0.0%" ) & ")."
+			    )
+			// IF ( ISBLANK ( [CDP_M12 Compliance %] ), "No CDP_M12 in-scope referrals for the current selection.", "M12 compliance is " & FORMAT ( [CDP_M12 Compliance %], "0.0%" ) & " overall. " & COUNTROWS ( FILTER ( VALUES ( Dim_Team[Team] ), [CDP_M12 Compliance %] < [M12 Provider Average] ) ) & " of " & COUNTROWS ( FILTER ( VALUES ( Dim_Team[Team] ), NOT ISBLANK ( [CDP_M12 Compliance %] ) ) ) & " teams are below the Trust average. Weakest team: " & MAXX ( FILTER ( VALUES ( Dim_Team[Team] ), [CDP_M12 Compliance %] = MINX ( FILTER ( VALUES ( Dim_Team[Team] ), NOT ISBLANK ( [CDP_M12 Compliance %] ) ), [CDP_M12 Compliance %] ) ), Dim_Team[Team] ) & " (" & FORMAT ( MINX ( FILTER ( VALUES ( Dim_Team[Team] ), NOT ISBLANK ( [CDP_M12 Compliance %] ) ), [CDP_M12 Compliance %] ), "0.0%" ) & "); strongest: " & MAXX ( FILTER ( VALUES ( Dim_Team[Team] ), [CDP_M12 Compliance %] = MAXX ( VALUES ( Dim_Team[Team] ), [CDP_M12 Compliance %] ) ), Dim_Team[Team] ) & " (" & FORMAT ( MAXX ( VALUES ( Dim_Team[Team] ), [CDP_M12 Compliance %] ), "0.0%" ) & ")." )
+		displayFolder: 09 Commentary
+		lineageTag: 65fff5ff-bc5a-4e68-9464-c18d46e2cc27
+
+	measure 'Commentary — Timeliness' = IF ( ISBLANK ( [CDP_M12 In Scope] ) && ISBLANK ( [CDP_M11 In Scope] ), "No in-scope crisis referrals for the current selection.", "Median time to first face-to-face contact is " & FORMAT ( [Median Hours to First F2F], "0.0" ) & " hours. The 4-hour (M11) breach rate is " & FORMAT ( [CDP_M11 Breach %], "0.0%" ) & " and the 24-hour (M12) breach rate is " & FORMAT ( [CDP_M12 Breach %], "0.0%" ) & ". " & FORMAT ( [% Referrals with F2F Contact], "0.0%" ) & " of referrals received any face-to-face contact." )
+		displayFolder: 09 Commentary
+		lineageTag: 5a9547ad-3f8c-46ae-8503-4478725c7fbc
+
+	measure 'Commentary — Data Quality' = IF ( ISBLANK ( [Total Referrals] ), "No referrals for the current selection.", "Ethnicity recording is " & FORMAT ( [Ethnicity Recorded %], "0.0%" ) & " complete (" & [Referrals Missing Ethnicity] & " referrals missing). Lowest recording is in " & MAXX ( FILTER ( VALUES ( Dim_Locality[Locality] ), [Ethnicity Recorded %] = MINX ( VALUES ( Dim_Locality[Locality] ), [Ethnicity Recorded %] ) ), Dim_Locality[Locality] ) & " at " & FORMAT ( MINX ( VALUES ( Dim_Locality[Locality] ), [Ethnicity Recorded %] ), "0.0%" ) & ". Gender recording is " & FORMAT ( [Gender Recorded %], "0.00%" ) & " and contact-outcome recording " & FORMAT ( [Contact Outcome Recorded %], "0.0%" ) & "." )
+		displayFolder: 09 Commentary
+		lineageTag: 7a1a8340-32c9-45d9-80ef-03481dba6a84
+
+	measure 'Total Referrals STLY' = CALCULATE(DISTINCTCOUNT ( Fact_Referral[ReferralId] ),SAMEPERIODLASTYEAR(Dim_Date[Date]))
+		formatString: 0
+		displayFolder: 01 KPIs
+		lineageTag: ed2e859f-c2b1-44da-9917-913e53c4e72a
+
+	measure 'Metric Coverage %' =
+			
+			DIVIDE ( [CDP_M11 In Scope] + [CDP_M12 In Scope], [Total Referrals] )
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 10 Coverage
+		lineageTag: 241a6eb7-6ffc-4bf6-995c-02927cca9a86
+
+	measure 'Referrals Without F2F' =
+			
+			CALCULATE (
+			    COUNTROWS ( Fact_Referral ),
+			    KEEPFILTERS ( ISBLANK ( Fact_Referral[HasFaceToFaceContact] ) )
+			)
+			// COUNTROWS ( FILTER ( Fact_Referral, ISBLANK ( Fact_Referral[FirstF2FDateTime] ) ) )
+			// CALCULATE (
+			//     COUNTROWS ( Fact_Referral ),
+			//     KEEPFILTERS ( Fact_Referral[HasFaceToFaceContact] = "No" )
+			// )
+		formatString: 0
+		displayFolder: 10 Coverage
+		lineageTag: 5861cb45-2e62-4591-92e9-7c8864e26e99
+
+	measure 'Commentary - Coverage' =
+			
+			IF (
+			    ISBLANK ( [Total Referrals] ),
+			    "",
+			    "Metric coverage: only "
+			        & FORMAT ( [Metric Coverage %], "0.0%" )
+			        & " of referrals ("
+			        & FORMAT ( [CDP_M11 In Scope] + [CDP_M12 In Scope], "#,0" )
+			        & " of "
+			        & FORMAT ( [Total Referrals], "#,0" )
+			        & ") are in scope of either national standard. "
+			        & FORMAT ( [Referrals Without F2F], "#,0" )
+			        & " referrals have no face-to-face contact recorded and fall out of the denominator rather than counting as breaches."
+			)
+		displayFolder: 09 Commentary
+		lineageTag: 265dd21f-6fac-4ca2-b705-68c1273e290c
+
+	measure 'Commentary - Equality' =
+			
+			VAR NotRecorded = 1 - [Ethnicity Recorded %]
+			RETURN
+			    IF (
+			        ISBLANK ( [Total Referrals] ),
+			        "",
+			        "Ethnicity is unrecorded for "
+			            & FORMAT ( NotRecorded, "0.0%" )
+			            & " of referrals ("
+			            & FORMAT ( [Referrals Missing Ethnicity], "#,0" )
+			            & "), so the access comparison above is provisional."
+			    )
+		displayFolder: 09 Commentary
+		lineageTag: 721e1e44-51f6-4bf5-80ad-e11a429e0dea
+
+	measure 'Team Coverage %' =
+			
+			DIVIDE ( [CDP_M11 In Scope] + [CDP_M12 In Scope], [Total Referrals] )
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 10 Coverage
+		lineageTag: a56f86cd-376d-4a26-9e50-84a8ee3c5336
+
+	measure 'Team Median Compliance' =
+			
+			MEDIANX (
+			    FILTER ( ALL ( Dim_Team[Team] ), [CDP_M12 In Scope] >= 30 ),
+			    [CDP_M12 Compliance %]
+			)
+		displayFolder: 11 Opportunity
+		lineageTag: 3a301b15-2231-467f-b481-6cbf00f61fde
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Opportunity (Referrals)' =
+			
+			VAR Med = [Team Median Compliance]
+			VAR Gap = Med - [CDP_M12 Compliance %]
+			RETURN
+			    IF (
+			        [CDP_M12 In Scope] >= 30 && Gap > 0,
+			        ROUND ( Gap * [CDP_M12 In Scope], 0 )
+			    )
+		displayFolder: 11 Opportunity
+		lineageTag: 459140f9-fc56-4c7d-b4fc-93cf9ce03e0b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Opportunity Title' =
+			
+			"Improvement Opportunity: referrals needed to reach the team median ("
+			    & FORMAT ( [Team Median Compliance], "0.0%" ) & ")"
+		displayFolder: 11 Opportunity
+		lineageTag: b115da94-93d3-4549-a426-4aa41a4868ae
+
+	measure 'Contact Recording %' =
+			
+			DIVIDE (
+			    CALCULATE ( COUNTROWS ( Fact_Referral ), KEEPFILTERS ( Fact_Referral[ContactCount] > 0 ) ),
+			    [Total Referrals]
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 07 Data Quality
+		lineageTag: 58f22a8a-b280-471f-8a9c-0ca967ae6e4b
+
+	measure 'Contacts Timestamped At Or Before Referral %' =
+			
+			VAR WithContact =
+			    CALCULATE ( COUNTROWS ( Fact_Referral ), KEEPFILTERS ( Fact_Referral[ContactCount] > 0 ) )
+			VAR AtOrBefore =
+			    COUNTROWS (
+			        FILTER (
+			            Fact_Referral,
+			            NOT ISBLANK ( Fact_Referral[HoursToFirstContact] )
+			                && Fact_Referral[HoursToFirstContact] <= 0
+			        )
+			    )
+			RETURN
+			    DIVIDE ( AtOrBefore, WithContact )
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 07 Data Quality
+		lineageTag: 46b4a619-ed61-4fdb-961f-3bece3815475
+
+	measure 'SPC Mean' =
+			
+			VAR Num = CALCULATE ( [CDP_M12 Passed], ALLSELECTED ( Dim_Date ) )
+			VAR Den = CALCULATE ( [CDP_M12 In Scope], ALLSELECTED ( Dim_Date ) )
+			RETURN DIVIDE ( Num, Den )
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 64bcd290-3d66-4267-aebf-9a2b5bac371a
+
+	measure 'SPC Sigma' =
+			
+			VAR PBar = [SPC Mean]
+			VAR N = [CDP_M12 In Scope]
+			RETURN IF ( N > 0, SQRT ( DIVIDE ( PBar * ( 1 - PBar ), N ) ) )
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 2039ff89-1a60-4ca7-881f-e23ae8e8e9c8
+
+	measure 'SPC UCL' = MIN ( 1, [SPC Mean] + 3 * [SPC Sigma] )
+		formatString: #,0.00%;-#,0.00%;#,0.00%
+		lineageTag: 704d1701-8831-499b-a7c5-f496ac50531f
+
+	measure 'SPC LCL' = MAX ( 0, [SPC Mean] - 3 * [SPC Sigma] )
+		formatString: #,0.00%;-#,0.00%;#,0.00%
+		lineageTag: 3bedda39-c423-4e06-8648-5721609278fd
+
+	column 'Applicable Crisis KPI'
+		dataType: string
+		lineageTag: 2b2e3cce-f549-4bb0-93e0-670f019310ae
+		summarizeBy: none
+		sourceColumn: Applicable Crisis KPI
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'CDPM11 Compliance Status'
+		dataType: string
+		lineageTag: 04aa3a46-4ab9-4b0f-b0c4-e7d2c2c280ae
+		summarizeBy: none
+		sourceColumn: CDPM11 Compliance Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'CDPM12 Compliance Status'
+		dataType: string
+		lineageTag: 8fbe7d94-9ee2-44d7-a1cb-2898600809cb
+		summarizeBy: none
+		sourceColumn: CDPM12 Compliance Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column PatientId
+		dataType: string
+		lineageTag: ee1b0880-643a-4caa-809e-4bd15ce333f9
+		summarizeBy: none
+		sourceColumn: PatientId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Age
+		dataType: int64
+		formatString: 0
+		lineageTag: bb975caf-e8ac-49a7-a9c3-eaa333cd252a
+		summarizeBy: sum
+		sourceColumn: Age
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ethnicity
+		dataType: string
+		lineageTag: e44fa8b8-413c-4857-b804-1f477b2d6553
+		summarizeBy: none
+		sourceColumn: Ethnicity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: d11de5f3-29a8-42f4-9178-c1eb4fa74cee
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReferralId
+		dataType: int64
+		formatString: 0
+		lineageTag: b30e1ed7-e64d-479d-b6fc-e9139fa519f3
+		summarizeBy: count
+		sourceColumn: ReferralId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Team
+		dataType: string
+		lineageTag: 99097c6b-122e-46a1-b5fc-c07a5f8c8803
+		summarizeBy: none
+		sourceColumn: Team
+
+		annotation SummarizationSetBy = Automatic
+
+	column Locality
+		dataType: string
+		lineageTag: df2ce03f-0c78-4d03-aaa5-3d7c7e96e5b4
+		summarizeBy: none
+		sourceColumn: Locality
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Referral Date Time'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: ab007472-8847-4461-b173-e913c9c87025
+		summarizeBy: none
+		sourceColumn: Referral Date Time
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Referral Source'
+		dataType: string
+		lineageTag: 54b4c2d3-a3e8-432a-bae0-7b06eb71217f
+		summarizeBy: none
+		sourceColumn: Referral Source
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Referral Urgency'
+		dataType: string
+		lineageTag: 5ec25df2-114e-4133-a6b8-6d284e4d4039
+		summarizeBy: none
+		sourceColumn: Referral Urgency
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Other Active Referrals'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1f0f5919-eaf1-417c-afeb-c651fd1ce31f
+		summarizeBy: sum
+		sourceColumn: Other Active Referrals
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstF2FDateTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: fbd7c3b2-e095-4847-a35e-7922410d49b7
+		summarizeBy: none
+		sourceColumn: FirstF2FDateTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column F2FContactCount
+		dataType: int64
+		formatString: 0
+		lineageTag: ea8589f4-1d68-4941-9606-b079ce93ca9b
+		summarizeBy: sum
+		sourceColumn: F2FContactCount
+
+		annotation SummarizationSetBy = Automatic
+
+	column ContactCount
+		dataType: int64
+		formatString: 0
+		lineageTag: a84d116b-29b3-4f61-a81b-a12e4edcecc3
+		summarizeBy: sum
+		sourceColumn: ContactCount
+
+		annotation SummarizationSetBy = Automatic
+
+	column FirstContactDateTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1eae0d7a-e355-4518-853d-70b742432ee0
+		summarizeBy: none
+		sourceColumn: FirstContactDateTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastContactDateTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c8863780-400c-4b0f-8fd3-62afbf15afeb
+		summarizeBy: none
+		sourceColumn: LastContactDateTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column HoursToFirstF2F
+		dataType: double
+		lineageTag: aaf0b03e-3de3-4634-9f7a-b83d8dee45e1
+		summarizeBy: sum
+		sourceColumn: HoursToFirstF2F
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column HoursToFirstContact
+		dataType: double
+		lineageTag: c0a61d1b-78f9-4220-9022-50825ac02e06
+		summarizeBy: sum
+		sourceColumn: HoursToFirstContact
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ReferralDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7651a0c9-76f8-48b0-af2f-8c6f523f4e0e
+		summarizeBy: none
+		sourceColumn: ReferralDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column AgeBand
+		dataType: string
+		lineageTag: 6f452c8d-657a-4e21-9f93-79ddfef94f43
+		summarizeBy: none
+		sourceColumn: AgeBand
+		sortByColumn: 'AgeBand Sort'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MetricScope
+		dataType: string
+		lineageTag: d30e99ab-e8df-41b1-b707-abe63883f46a
+		summarizeBy: none
+		sourceColumn: MetricScope
+
+		annotation SummarizationSetBy = Automatic
+
+	column HasFaceToFaceContact
+		dataType: string
+		lineageTag: 6e6d1957-68a8-41ff-8a02-b8f806cf7382
+		summarizeBy: none
+		sourceColumn: HasFaceToFaceContact
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'F2F Response Band' = SWITCH ( TRUE (), Fact_Referral[HoursToFirstF2F] < 0, "Before referral (check)", ISBLANK ( Fact_Referral[HoursToFirstF2F] ), "No F2F contact", Fact_Referral[HoursToFirstF2F] <= 4, "0-4 hrs (M11 target)", Fact_Referral[HoursToFirstF2F] <= 24, "4-24 hrs", Fact_Referral[HoursToFirstF2F] <= 72, "24-72 hrs", ">72 hrs" )
+		dataType: string
+		displayFolder: Timeliness Bands
+		lineageTag: 32a133ac-80ed-42a2-8259-19d87c62005b
+		summarizeBy: none
+		sortByColumn: 'F2F Response Band Sort'
+
+	column 'F2F Response Band Sort' = SWITCH ( TRUE (), Fact_Referral[HoursToFirstF2F] < 0, 0, ISBLANK ( Fact_Referral[HoursToFirstF2F] ), 5, Fact_Referral[HoursToFirstF2F] <= 4, 1, Fact_Referral[HoursToFirstF2F] <= 24, 2, Fact_Referral[HoursToFirstF2F] <= 72, 3, 4 )
+		dataType: int64
+		isHidden
+		displayFolder: Timeliness Bands
+		lineageTag: b06dfce0-8fe2-4368-93f3-eab818829d6f
+		summarizeBy: none
+
+	column 'Contact Response Band' = SWITCH ( TRUE (), Fact_Referral[HoursToFirstContact] < 0, "Before referral (check)", ISBLANK ( Fact_Referral[HoursToFirstContact] ), "No contact", Fact_Referral[HoursToFirstContact] <= 4, "0-4 hrs", Fact_Referral[HoursToFirstContact] <= 24, "4-24 hrs (M12 target)", Fact_Referral[HoursToFirstContact] <= 72, "24-72 hrs", ">72 hrs" )
+		dataType: string
+		displayFolder: Timeliness Bands
+		lineageTag: 4d6ab2f2-b5ab-4d64-9076-977376760d42
+		summarizeBy: none
+		sortByColumn: 'Contact Response Band Sort'
+
+	column 'Contact Response Band Sort' = SWITCH ( TRUE (), Fact_Referral[HoursToFirstContact] < 0, 0, ISBLANK ( Fact_Referral[HoursToFirstContact] ), 5, Fact_Referral[HoursToFirstContact] <= 4, 1, Fact_Referral[HoursToFirstContact] <= 24, 2, Fact_Referral[HoursToFirstContact] <= 72, 3, 4 )
+		dataType: int64
+		isHidden
+		displayFolder: Timeliness Bands
+		lineageTag: 781e0635-bc6f-4da2-8863-f6c0de4a6e00
+		summarizeBy: none
+
+	column 'AgeBand Sort' =
+			
+			SWITCH (
+			    TRUE (),
+			    ISBLANK ( Fact_Referral[Age] ), 9,
+			    Fact_Referral[Age] < 18, 1,
+			    Fact_Referral[Age] <= 25, 2,
+			    Fact_Referral[Age] <= 35, 3,
+			    Fact_Referral[Age] <= 50, 4,
+			    Fact_Referral[Age] <= 65, 5,
+			    6
+			)
+		isHidden
+		formatString: 0
+		lineageTag: 97c7076f-0878-4347-9503-12b95fede35e
+		summarizeBy: sum
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Fact_Referral = m
+		mode: import
+		queryGroup: Load
+		source =
+				let
+				    Source = Entity_Crisis,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Applicable Crisis KPI", "CDPM11 Compliance Status", "CDPM12 Compliance Status", "PatientId", "Age", "Ethnicity", "Gender", "ReferralId", "Team", "Locality", "Referral Date Time", "Referral Source", "Referral Urgency", "Other Active Referrals"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns", {"ReferralId"}),
+				    #"Merged Queries" = Table.NestedJoin(#"Removed Duplicates", {"ReferralId"}, Ref_FirstF2F, {"ReferralId"}, "Ref_FirstF2F", JoinKind.LeftOuter),
+				    #"Expanded Ref_FirstF2F" = Table.ExpandTableColumn(#"Merged Queries", "Ref_FirstF2F", {"FirstF2FDateTime", "F2FContactCount"}, {"FirstF2FDateTime", "F2FContactCount"}),
+				    #"Merged Queries1" = Table.NestedJoin(#"Expanded Ref_FirstF2F", {"ReferralId"}, Ref_AllContacts, {"ReferralId"}, "Ref_AllContacts", JoinKind.LeftOuter),
+				    #"Expanded Ref_AllContacts" = Table.ExpandTableColumn(#"Merged Queries1", "Ref_AllContacts", {"ContactCount", "FirstContactDateTime", "LastContactDateTime"}, {"ContactCount", "FirstContactDateTime", "LastContactDateTime"}),
+				    #"Added Custom" = Table.AddColumn(#"Expanded Ref_AllContacts", "HoursToFirstF2F", each Duration.TotalHours([FirstF2FDateTime] - [Referral Date Time])),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom",{{"HoursToFirstF2F", type number}}),
+				    #"Added Custom1" = Table.AddColumn(#"Changed Type", "HoursToFirstContact", each Duration.TotalHours([FirstContactDateTime] - [Referral Date Time])),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Added Custom1",{{"HoursToFirstContact", type number}}),
+				    #"Duplicated Column" = Table.DuplicateColumn(#"Changed Type1", "Referral Date Time", "Referral Date Time - Copy"),
+				    #"Changed Type2" = Table.TransformColumnTypes(#"Duplicated Column",{{"Referral Date Time - Copy", type date}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type2",{{"Referral Date Time - Copy", "ReferralDate"}}),
+				    #"Added Conditional Column" = Table.AddColumn(#"Renamed Columns", "AgeBand", each if [Age] < 18 then "Under 18" else if [Age] <= 25 then "18 to 25" else if [Age] <= 35 then "26 to 35" else if [Age] <= 50 then "36 to 50" else if [Age] <= 65 then "51 to 65" else if [Age] <= 200 then "66 and over" else "Not recorded"),
+				    #"Added Conditional Column1" = Table.AddColumn(#"Added Conditional Column", "MetricScope", each if [CDPM11 Compliance Status] = "Pass" then "CDP_M11 in scope" else if [CDPM11 Compliance Status] = "Breach" then "CDP_M11 in scope" else if [CDPM12 Compliance Status] = "Pass" then "CDP_M12 in scope" else if [CDPM12 Compliance Status] = "Breach" then "CDP_M12 in scope" else "Out of scope"),
+				    #"Added Conditional Column2" = Table.AddColumn(#"Added Conditional Column1", "HasFaceToFaceContact", each if [F2FContactCount] > 0 then "Yes" else "No"),
+				    #"Replaced Value" = Table.ReplaceValue(#"Added Conditional Column2",null,"Not recorded",Replacer.ReplaceValue,{"Ethnicity"})
+				in
+				    #"Replaced Value"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

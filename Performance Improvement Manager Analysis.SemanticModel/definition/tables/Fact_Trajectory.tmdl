@@ -1,0 +1,60 @@
+table Fact_Trajectory
+	lineageTag: c1ad2822-2867-496e-9e57-eaeec380e400
+
+	measure 'M12 Target Rate' = AVERAGE ( Fact_Trajectory[Target Rate] )
+		formatString: 0.0%
+		displayFolder: 06 Trajectory
+		lineageTag: 9a0f9d4e-ce22-4642-b9d3-3316ddfb63ff
+
+	measure 'M12 vs Target (ppt)' = [CDP_M12 Compliance %] - [M12 Target Rate]
+		formatString: 0.0%
+		displayFolder: 06 Trajectory
+		lineageTag: 346a97d4-3617-4468-aabb-fc6ac57ae606
+
+	column Month
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1eba7841-a0ac-4a9d-a23f-2101214c0692
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Locality
+		dataType: string
+		lineageTag: f5563c82-704f-4179-9445-c5c23c032046
+		summarizeBy: none
+		sourceColumn: Locality
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Target Rate'
+		dataType: double
+		lineageTag: cfca8364-1062-4387-b474-382506896a1c
+		summarizeBy: sum
+		sourceColumn: Target Rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Fact_Trajectory = m
+		mode: import
+		queryGroup: Load
+		source =
+				let
+				  Source = Excel.Workbook(File.Contents("C:\Users\STAR\Downloads\Performance Improvement Manager Analysis test.xlsx"), null, true),
+				  #"Navigation 1" = Source{[Item = "Table1", Kind = "Table"]}[Data],
+				  #"Changed column type" = Table.TransformColumnTypes(#"Navigation 1", {{"Month", type date}, {"Locality A", type number}, {"Locality B", type number}, {"Locality C", type number}, {"Locality D", type number}, {"Locality E", type number}}, "en-US"),
+				    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Changed column type", {"Month"}, "Attribute", "Value"),
+				    #"Renamed Columns" = Table.RenameColumns(#"Unpivoted Other Columns",{{"Attribute", "Locality"}, {"Value", "Target Rate"}}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"Target Rate", Percentage.Type}})
+				in
+				  #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

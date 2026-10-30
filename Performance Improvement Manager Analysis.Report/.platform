@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Performance Improvement Manager Analysis"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "83f38f2d-4429-4aff-9a00-9a78300d4921"
+  }
+}

@@ -1,0 +1,157 @@
+table Dim_Date
+	lineageTag: 7231613f-84d5-4b88-9de4-91448c87996f
+
+	measure 'Service Model' =
+			
+			VAR T =
+			    ADDCOLUMNS (
+			        VALUES ( Fact_Contact[TeamTypeNationalDesc] ),
+			        "@Cnt", CALCULATE ( COUNTROWS ( Fact_Contact ) )
+			    )
+			VAR TopType =
+			    MAXX ( TOPN ( 1, T, [@Cnt], DESC ), Fact_Contact[TeamTypeNationalDesc] )
+			RETURN
+			    IF (
+			        HASONEVALUE ( Dim_Team[Team] ),
+			        SWITCH (
+			            TRUE (),
+			            ISBLANK ( TopType ), "No contacts",
+			            TopType = "Crisis Resolution Team/Home Treatment Service", "CRHT",
+			            TopType = "24/7 Crisis Response Line", "24/7 Response Line",
+			            TopType = "Single Point of Access Service", "SPOA",
+			            TopType
+			        )
+			    )
+		lineageTag: 87fba9d5-1955-4f11-a7e4-6ee8b6e99654
+
+	column Date
+		formatString: General Date
+		lineageTag: b5a6dc61-0aa0-4600-8142-44e2274ab888
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		formatString: 0
+		lineageTag: 46c23bde-82ea-460d-8850-9237c458aec0
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		formatString: 0
+		lineageTag: 1da0c9a0-64c7-4d5d-995b-c7b09ec3ef93
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [MonthNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		lineageTag: 7aea25b4-d964-42df-bc87-660491e2bc94
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthName]
+		sortByColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthYear
+		lineageTag: fd000994-1586-469c-9d21-ba3ad968e9bd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthYear]
+		sortByColumn: MonthSort
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthStart
+		formatString: General Date
+		lineageTag: 80d91be0-1bff-434e-ba7b-e633a826cfae
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthStart]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthSort
+		formatString: 0
+		lineageTag: 3ca0d463-e6e5-4e1e-acc8-15596b0ed2fb
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [MonthSort]
+
+		annotation SummarizationSetBy = Automatic
+
+	column FinancialYear
+		lineageTag: 0920cef4-013f-4d67-ba87-32a4da26e631
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [FinancialYear]
+
+		annotation SummarizationSetBy = Automatic
+
+	column FinancialQuarter
+		lineageTag: 6d8f2fc6-c0ca-46a8-ac6d-426103d87786
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [FinancialQuarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		lineageTag: db3a887a-0523-40f7-91f7-c5e2105b98b6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DayName]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeekNumber
+		formatString: 0
+		lineageTag: 665c4d3b-08f6-4dea-9cb1-284381564555
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [DayOfWeekNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsWeekend
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 052fc58d-495a-40a1-ae82-304f763c1f08
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [IsWeekend]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Date = calculated
+		mode: import
+		source =
+				
+				ADDCOLUMNS (
+				    CALENDAR ( DATE ( 2024, 4, 1 ), DATE ( 2028, 3, 31 ) ),
+				    "Year", YEAR ( [Date] ),
+				    "MonthNumber", MONTH ( [Date] ),
+				    "MonthName", FORMAT ( [Date], "MMM" ),
+				    "MonthYear", FORMAT ( [Date], "MMM yyyy" ),
+				    "MonthStart", DATE ( YEAR ( [Date] ), MONTH ( [Date] ), 1 ),
+				    "MonthSort", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
+				    "FinancialYear",
+				        IF (
+				            MONTH ( [Date] ) >= 4,
+				            FORMAT ( YEAR ( [Date] ), "0" ) & "/" & RIGHT ( FORMAT ( YEAR ( [Date] ) + 1, "0" ), 2 ),
+				            FORMAT ( YEAR ( [Date] ) - 1, "0" ) & "/" & RIGHT ( FORMAT ( YEAR ( [Date] ), "0" ), 2 )
+				        ),
+				    "FinancialQuarter", "Q" & ( QUOTIENT ( MOD ( MONTH ( [Date] ) + 8, 12 ), 3 ) + 1 ),
+				    "DayName", FORMAT ( [Date], "ddd" ),
+				    "DayOfWeekNumber", WEEKDAY ( [Date], 2 ),
+				    "IsWeekend", WEEKDAY ( [Date], 2 ) >= 6
+				)
+
+	annotation PBI_Id = 84b0887d339a4f779ee7bcc52c8c333c
+

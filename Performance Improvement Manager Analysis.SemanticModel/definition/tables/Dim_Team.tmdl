@@ -1,0 +1,34 @@
+table Dim_Team
+	lineageTag: 0317bd44-bf47-4315-bf98-2b2bc4f023b8
+
+	column Team
+		dataType: string
+		lineageTag: c88ac2f3-79d6-4d74-8239-b826ccfbba93
+		summarizeBy: none
+		sourceColumn: Team
+
+		annotation SummarizationSetBy = Automatic
+
+	column Locality
+		dataType: string
+		lineageTag: f44fe319-8821-423b-b34c-010172a925e7
+		summarizeBy: none
+		sourceColumn: Locality
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Team = m
+		mode: import
+		queryGroup: Load
+		source =
+				let
+				    Source = Entity_Crisis,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Team", "Locality"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns", {"Team"})
+				in
+				    #"Removed Duplicates"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+
